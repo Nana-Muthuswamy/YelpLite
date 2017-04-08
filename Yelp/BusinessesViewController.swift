@@ -11,11 +11,29 @@ import UIKit
 class BusinessesViewController: UIViewController {
     
     var businesses: [Business]!
+
+    fileprivate var searchController: UISearchController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
+
+        // Setup Search Controller and Search bar
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+
+        searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.sizeToFit()
+
+        self.navigationItem.titleView = searchController.searchBar
+
+        self.definesPresentationContext = true
+
+        // Search and load default results for the current location
+        Business.searchWithTerm(term: "", completion: { (businesses: [Business]?, error: Error?) -> Void in
             
             self.businesses = businesses
             if let businesses = businesses {
@@ -40,20 +58,12 @@ class BusinessesViewController: UIViewController {
          */
         
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+}
+
+extension BusinessesViewController: UISearchResultsUpdating {
+
+    func updateSearchResults(for searchController: UISearchController) {
+
     }
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
 }
