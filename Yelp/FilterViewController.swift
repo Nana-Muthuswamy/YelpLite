@@ -27,6 +27,10 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
             filter = Filter(dealsOnly: false, radius: 0, sort: .bestMatched, selectedCategories: nil)
         }
 
+        // Force set to generate options for radii and sort modes
+        filter.setRadius(filter.radius)
+        filter.setSortType(filter.sort)
+
         let allCategories = Filter.categories
 
         filter.selectedCategories?.forEach({ (selectedElement) in
@@ -51,7 +55,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
 
     func switchValueDidChange(sender: SwitchTableViewCell) {
 
-        let name = sender.firstLabel()!.text!
+        let name = sender.firstLabel!.text!
 
         if let index = Filter.categories.index(where: { (element) -> Bool in
             return name == element["name"]
@@ -110,7 +114,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchTableViewCell") as! SwitchTableViewCell
             cell.switchControl.isOn = filter.dealsOnly
-            cell.firstLabel()?.text = "Offering a Deal"
+            cell.firstLabel?.text = "Offering a Deal"
 
             cell.delegate = self
 
@@ -123,12 +127,12 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
                 switch indexPath.row {
                 case 0:
                     let cell = tableView.dequeueReusableCell(withIdentifier: "SelectedOptionCell")!
-                    cell.firstLabel()?.text = filter.formattedRadius
+                    cell.firstLabel?.text = filter.formattedRadius
                     return cell
 
                 case 1...4:
                     let cell = tableView.dequeueReusableCell(withIdentifier: "OtherOptionCell")!
-                    cell.firstLabel()?.text = filter.otherRadiiOtions[indexPath.row - 1]
+                    cell.firstLabel?.text = filter.otherRadiiOtions[indexPath.row - 1]
 
                     return cell
 
@@ -139,7 +143,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
             } else {
 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "HeaderCell")!
-                cell.firstLabel()?.text = filter.formattedRadius
+                cell.firstLabel?.text = filter.formattedRadius
                 return cell
             }
 
@@ -150,12 +154,12 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
                 switch indexPath.row {
                 case 0:
                     let cell = tableView.dequeueReusableCell(withIdentifier: "SelectedOptionCell")!
-                    cell.firstLabel()?.text = filter.sortName
+                    cell.firstLabel?.text = filter.sortName
                     return cell
 
                 case 1...2:
                     let cell = tableView.dequeueReusableCell(withIdentifier: "OtherOptionCell")!
-                    cell.firstLabel()?.text = filter.otherSortOptions[indexPath.row - 1]
+                    cell.firstLabel?.text = filter.otherSortOptions[indexPath.row - 1]
                     return cell
 
                 default:
@@ -165,7 +169,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
             } else {
 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "HeaderCell")!
-                cell.firstLabel()?.text = filter.sortName
+                cell.firstLabel?.text = filter.sortName
                 return cell
             }
 
@@ -173,7 +177,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
 
             let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchTableViewCell") as! SwitchTableViewCell
 
-            cell.firstLabel()?.text = Filter.categories[indexPath.row]["name"]!
+            cell.firstLabel?.text = Filter.categories[indexPath.row]["name"]!
 
             if selectedCategoryIndices.filter({ (element) -> Bool in
                 element == indexPath.row
@@ -208,6 +212,57 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         default:
             return nil
         }
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+        switch indexPath.section {
+        case 1:
+            if displayDistanceOptions { // Get the selected distance option
+                displayDistanceOptions = false
+
+                let newSelectedValue = tableView.cellForRow(at: indexPath)!.firstLabel!.text!
+
+                if let matchingElement = Filter.radii.first(where: { (element) -> Bool in
+                    return element.value == newSelectedValue
+                }) {
+                    filter.setRadius(matchingElement.key)
+                }
+
+            } else { // display other display options
+                displayDistanceOptions = true
+            }
+
+            tableView.reloadData()
+            // Save latest filter to UserDefaults
+            // TDO: Need to dispose when choosing Cancel
+            saveFilter()
+
+        case 2:
+            if displaySortOptions { // Get the selected sort option
+                displaySortOptions = false
+
+                let newSelectedValue = tableView.cellForRow(at: indexPath)!.firstLabel!.text!
+
+                if let matchingElement = Filter.sorts.first(where: { (element) -> Bool in
+                    return element.value == newSelectedValue
+                }) {
+                    filter.setSortType(matchingElement.key)
+                }
+
+            } else { // display other sort options
+                displaySortOptions = true
+            }
+
+            tableView.reloadData()
+            // Save latest filter to UserDefaults
+            // TDO: Need to dispose when choosing Cancel
+            saveFilter()
+
+        default:
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
     }
 
     // MARK: - Utils

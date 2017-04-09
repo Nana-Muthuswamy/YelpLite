@@ -10,7 +10,7 @@ import UIKit
 
 extension UIView {
 
-    func firstLabel() -> UILabel? {
+    var firstLabel: UILabel? {
         return self.viewWithTag(1) as? UILabel
     }
 }

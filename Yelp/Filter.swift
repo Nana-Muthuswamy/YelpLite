@@ -84,8 +84,8 @@ struct Filter {
             radius = 0
         }
 
-        if let newValue = dictionary["sort"] as? YelpSortMode {
-            sort = newValue
+        if let newValue = dictionary["sort"] as? Int, let newSort = YelpSortMode(rawValue: newValue) {
+            sort = newSort
         } else {
             sort = .bestMatched
         }
