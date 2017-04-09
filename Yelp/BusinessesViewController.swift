@@ -9,7 +9,7 @@
 import UIKit
 import MBProgressHUD
 
-class BusinessesViewController: UIViewController {
+class BusinessesViewController: UIViewController, FilterViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
 
@@ -48,54 +48,21 @@ class BusinessesViewController: UIViewController {
 
         self.definesPresentationContext = true
 
-        // Search and load nearby results for the current location
-        // TDO: Extract the last saved filter object and apply to the search
-        fetchNearbyRestaurants()
-        
-        /* Example of Yelp search with more search options specified
-         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-         self.businesses = businesses
-         
-         for business in businesses {
-         print(business.name!)
-         print(business.address!)
-         }
-         }
-         */
-        
+        // Load search results based on current location and saved filters
+        let filter = AppGlobals.shared.filter
+
+        performSearch(text: searchText, dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.categories)
     }
 
     // MARK: Data Manager
 
-    func fetchNearbyRestaurants() {
-        performSearch(text: "")
-    }
-
     func performSearch(text: String) {
 
-        let hudView = MBProgressHUD.showAdded(to: self.view, animated: true)
-        hudView.label.text = "Loading Results..."
-
-        Business.searchWithTerm(term: text) {[weak weakSelf = self] (businesses: [Business]?, error: Error?) in
-
-            hudView.hide(animated: true)
-
-            print("Error: \(String(describing: error))")
-            print("Simple Search Results: \(String(describing: businesses))")
-
-            weakSelf?.businesses = [Business]()
-
-            if businesses != nil {
-                weakSelf?.searchResultsEmpty = false
-            } else {
-                weakSelf?.searchResultsEmpty = true
-            }
-
-            weakSelf?.businesses = businesses
-        }
+        let filter = AppGlobals.shared.filter
+        performSearch(text: text, dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.categories)
     }
 
-    func performSearch(text: String, dealsOnly: Bool, radius: Float, sort: YelpSortMode, categories: Array<String>?) {
+    func performSearch(text: String, dealsOnly: Bool?, radius: Float?, sort: YelpSortMode?, categories: Array<String>?) {
 
         let hudView = MBProgressHUD.showAdded(to: self.view, animated: true)
         hudView.label.text = "Loading Results..."
@@ -109,7 +76,7 @@ class BusinessesViewController: UIViewController {
 
             weakSelf?.businesses = [Business]()
 
-            if businesses != nil {
+            if businesses.count > 0 {
                 weakSelf?.searchResultsEmpty = false
             } else {
                 weakSelf?.searchResultsEmpty = true
@@ -119,18 +86,21 @@ class BusinessesViewController: UIViewController {
         }
     }
 
-    // MARK: Navigation
+    // MARK: - FilterViewDelegate
 
-    @IBAction func applyFilterToSearchResults(unwindSegue: UIStoryboardSegue) {
-
-        if let source = unwindSegue.source as? FilterViewController, let filter = source.filter {
-
-            // Extract the current filter object and save to UserDefaults
-            UserDefaults.standard.set(filter.dictionaryRepresentation(), forKey: "savedFilter")
-            UserDefaults.standard.synchronize()
-
-            // Apply Filter to search results
+    func filterViewDismissed(filter: Filter, refreshResults: Bool) {
+        if refreshResults {
             performSearch(text: searchText, dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.categories)
+        }
+    }
+
+    // MARK: - Navigation
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowFilterView" {
+
+            let destination = segue.destination as! FilterViewController
+            destination.delegate = self
         }
     }
 }
@@ -173,7 +143,9 @@ extension BusinessesViewController: UISearchResultsUpdating {
                 searchTimer.invalidate()
             }
 
-            searchTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: {[weak weakSelf = self] (timer) in
+            searchTimer = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: false, block: {[weak weakSelf = self] (timer) in
+
+                weakSelf?.searchText = newText
                 weakSelf?.performSearch(text: newText)
             })
         }

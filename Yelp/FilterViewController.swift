@@ -9,7 +9,13 @@
 import UIKit
 import Foundation
 
+protocol FilterViewDelegate: class {
+    func filterViewDismissed(filter: Filter, refreshResults: Bool)
+}
+
 class FilterViewController: UITableViewController, FilterSwitchDelegate {
+
+    weak var delegate: FilterViewDelegate?
 
     var filter: Filter!
 
@@ -74,6 +80,13 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
 
     @IBAction func dismissFilterView(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
+        delegate?.filterViewDismissed(filter: filter, refreshResults: false)
+    }
+
+    @IBAction func saveFilterAndDimissFilterView(_ sender: Any) {
+        AppGlobals.shared.filter = filter
+        self.navigationController?.popViewController(animated: true)
+        delegate?.filterViewDismissed(filter: filter, refreshResults: true)
     }
 }
 // MARK: - Table View Datasource and Delegate

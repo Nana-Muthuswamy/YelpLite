@@ -156,7 +156,7 @@
                     <navigationItem key="navigationItem" id="lgV-x3-YRf">
                         <barButtonItem key="leftBarButtonItem" title="Filter" id="B5b-Ed-zXd">
                             <connections>
-                                <segue destination="vOx-Lb-11A" kind="show" id="UxI-7B-LYH"/>
+                                <segue destination="vOx-Lb-11A" kind="show" identifier="ShowFilterView" id="UxI-7B-LYH"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -303,13 +303,12 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Search" id="cRh-pT-lzZ">
                             <connections>
-                                <segue destination="5D4-Sz-XRz" kind="unwind" unwindAction="applyFilterToSearchResultsWithUnwindSegue:" id="K1x-zZ-COH"/>
+                                <action selector="saveFilterAndDimissFilterView:" destination="vOx-Lb-11A" id="hsW-RE-aEH"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zzK-Oh-OSI" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="5D4-Sz-XRz" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3476" y="359.37031484257875"/>
         </scene>
