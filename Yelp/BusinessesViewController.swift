@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MBProgressHUD
 
 class BusinessesViewController: UIViewController {
 
@@ -22,6 +23,7 @@ class BusinessesViewController: UIViewController {
 
     fileprivate var searchController: UISearchController!
     fileprivate var searchTimer: Timer!
+    fileprivate var searchText = ""
     fileprivate var searchResultsEmpty = false
     
     override func viewDidLoad() {
@@ -71,7 +73,12 @@ class BusinessesViewController: UIViewController {
 
     func performSearch(text: String) {
 
+        let hudView = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hudView.label.text = "Loading Results..."
+
         Business.searchWithTerm(term: text) {[weak weakSelf = self] (businesses: [Business]?, error: Error?) in
+
+            hudView.hide(animated: true)
 
             print("Error: \(String(describing: error))")
             print("Simple Search Results: \(String(describing: businesses))")
@@ -90,7 +97,12 @@ class BusinessesViewController: UIViewController {
 
     func performSearch(text: String, dealsOnly: Bool, radius: Float, sort: YelpSortMode, categories: Array<String>?) {
 
+        let hudView = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hudView.label.text = "Loading Results..."
+
         Business.searchWithTerm(term: text, sort: sort, categories: categories, deals: dealsOnly) {[weak weakSelf = self] (businesses: [Business]!, error: Error!) in
+
+            hudView.hide(animated: true)
 
             print("Error: \(String(describing: error))")
             print("Adv Search Results: \(String(describing: businesses))")
@@ -145,20 +157,24 @@ extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         }
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }
 
 extension BusinessesViewController: UISearchResultsUpdating {
 
     func updateSearchResults(for searchController: UISearchController) {
 
-        if let searchText = searchController.searchBar.text, searchText.characters.count > 0 {
+        if let newText = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), newText != searchText {
 
             if searchTimer != nil {
                 searchTimer.invalidate()
             }
 
             searchTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: {[weak weakSelf = self] (timer) in
-                weakSelf?.performSearch(text: searchText)
+                weakSelf?.performSearch(text: newText)
             })
         }
     }
