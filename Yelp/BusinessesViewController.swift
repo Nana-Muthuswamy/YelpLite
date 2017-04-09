@@ -46,6 +46,7 @@ class BusinessesViewController: UIViewController {
         self.definesPresentationContext = true
 
         // Search and load nearby results for the current location
+        // TDO: Extract the last saved filter object and apply to the search
         fetchNearbyRestaurants()
         
         /* Example of Yelp search with more search options specified
@@ -81,6 +82,17 @@ class BusinessesViewController: UIViewController {
          weakSelf?.businesses = businesses
          }
          */
+    }
+
+    // MARK: Navigation
+
+    override func performSegue(withIdentifier identifier: String, sender: Any?) {
+
+    }
+
+    @IBAction func unwindFilterViewController(unwindSegue: UIStoryboardSegue) {
+
+        // Extract the current filter object and save to UserDefaults
     }
 }
 

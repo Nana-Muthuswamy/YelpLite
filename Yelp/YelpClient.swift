@@ -19,6 +19,10 @@ let yelpTokenSecret = "mqtKIxMIR4iBtBPZCmCLEb-Dz3Y"
 
 enum YelpSortMode: Int {
     case bestMatched = 0, distance, highestRated
+
+    static func count() -> Int {
+        return 3
+    }
 }
 
 class YelpClient: BDBOAuth1RequestOperationManager {
