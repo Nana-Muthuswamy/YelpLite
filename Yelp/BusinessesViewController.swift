@@ -67,7 +67,7 @@ class BusinessesViewController: UIViewController, FilterViewDelegate {
         let hudView = MBProgressHUD.showAdded(to: self.view, animated: true)
         hudView.label.text = "Loading Results..."
 
-        Business.searchWithTerm(term: text, sort: sort, categories: categories, deals: dealsOnly) {[weak weakSelf = self] (businesses: [Business]!, error: Error!) in
+        Business.searchWithTerm(term: text, sort: sort, categories: categories, deals: dealsOnly, radius: radius) {[weak weakSelf = self] (businesses: [Business]!, error: Error!) in
 
             hudView.hide(animated: true)
 
