@@ -165,7 +165,7 @@ struct Filter {
         return dict
     }
 
-    static let radii: [Float: String] = [0: "Auto", 0.5: "0.5 miles", 1: "1 mile", 5: "5 miles", 20: "20 miles"]
+    static let radii: Dictionary<Float, String> = [0: "Auto", 0.5: "0.5 miles", 1: "1 mile", 5: "5 miles", 20: "20 miles"]
 
     static let sorts = [YelpSortMode.bestMatched: "Best Match", YelpSortMode.distance: "Distance", YelpSortMode.highestRated: "Rating"]
 

@@ -119,6 +119,25 @@
                                             <outlet property="reviews" destination="Qcx-bd-qdE" id="Far-cP-qJp"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="NoResultsCell" rowHeight="310" id="Ab4-hz-nrJ">
+                                        <rect key="frame" x="0.0" y="138" width="375" height="310"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ab4-hz-nrJ" id="Xpr-OF-GWk">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="309.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NoResults" translatesAutoresizingMaskIntoConstraints="NO" id="egM-p2-Ybd">
+                                                    <rect key="frame" x="72" y="8" width="230" height="293.5"/>
+                                                </imageView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="egM-p2-Ybd" secondAttribute="bottom" constant="8" id="Bwg-Ht-utT"/>
+                                                <constraint firstItem="egM-p2-Ybd" firstAttribute="centerX" secondItem="Xpr-OF-GWk" secondAttribute="centerX" id="Obh-HY-zsr"/>
+                                                <constraint firstItem="egM-p2-Ybd" firstAttribute="centerY" secondItem="Xpr-OF-GWk" secondAttribute="centerY" id="S9D-mm-FYZ"/>
+                                                <constraint firstItem="egM-p2-Ybd" firstAttribute="top" secondItem="Xpr-OF-GWk" secondAttribute="top" constant="8" id="aof-bK-JLb"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="2xI-yr-O5N" id="tdE-my-NPa"/>
@@ -277,7 +296,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Filter" id="6s6-mr-2Nt">
-                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="IFg-Cx-Ojy"/>
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="IFg-Cx-Ojy">
+                            <connections>
+                                <action selector="dismissFilterView:" destination="vOx-Lb-11A" id="9oY-PS-d3G"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Search" id="cRh-pT-lzZ">
                             <connections>
                                 <segue destination="5D4-Sz-XRz" kind="unwind" unwindAction="unwindFilterViewControllerWithUnwindSegue:" id="bSz-zE-QL2"/>
@@ -311,6 +334,7 @@
     </scenes>
     <resources>
         <image name="Disclosure" width="2000" height="2000"/>
+        <image name="NoResults" width="230" height="302"/>
         <image name="Selected" width="236" height="236"/>
     </resources>
 </document>

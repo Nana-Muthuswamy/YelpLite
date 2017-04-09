@@ -22,6 +22,7 @@ class BusinessesViewController: UIViewController {
 
     fileprivate var searchController: UISearchController!
     fileprivate var searchTimer: Timer!
+    fileprivate var searchResultsEmpty = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,47 +72,78 @@ class BusinessesViewController: UIViewController {
     func performSearch(text: String) {
 
         Business.searchWithTerm(term: text) {[weak weakSelf = self] (businesses: [Business]?, error: Error?) in
+
+            print("Error: \(String(describing: error))")
             print("Simple Search Results: \(String(describing: businesses))")
+
+            weakSelf?.businesses = [Business]()
+
+            if businesses != nil {
+                weakSelf?.searchResultsEmpty = false
+            } else {
+                weakSelf?.searchResultsEmpty = true
+            }
+
             weakSelf?.businesses = businesses
         }
+    }
 
-        /*
-         Business.searchWithTerm(term: "Restaurants", sort: .distance, categories: ["asianfusion", "burgers"], deals: true) {[weak weakSelf = self] (businesses: [Business]!, error: Error!) in
+    func performSearch(text: String, dealsOnly: Bool, radius: Float, sort: YelpSortMode, categories: Array<String>?) {
 
-         print("Adv Search Results: \(businesses)")
-         weakSelf?.businesses = businesses
-         }
-         */
+        Business.searchWithTerm(term: text, sort: sort, categories: categories, deals: dealsOnly) {[weak weakSelf = self] (businesses: [Business]!, error: Error!) in
+
+            print("Error: \(String(describing: error))")
+            print("Adv Search Results: \(String(describing: businesses))")
+
+            weakSelf?.businesses = [Business]()
+
+            if businesses != nil {
+                weakSelf?.searchResultsEmpty = false
+            } else {
+                weakSelf?.searchResultsEmpty = true
+            }
+
+            weakSelf?.businesses = businesses
+        }
     }
 
     // MARK: Navigation
 
-    override func performSegue(withIdentifier identifier: String, sender: Any?) {
-
-    }
-
     @IBAction func unwindFilterViewController(unwindSegue: UIStoryboardSegue) {
 
-        // Extract the current filter object and save to UserDefaults
+        if let source = unwindSegue.source as? FilterViewController, let filter = source.filter {
+
+            // Extract the current filter object and save to UserDefaults
+            UserDefaults.standard.set(filter.dictionaryRepresentation(), forKey: "savedFilter")
+            UserDefaults.standard.synchronize()
+
+            // Apply Filter to search results
+            performSearch(text: searchController.searchBar.text ?? "", dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.selectedCategories)
+        }
     }
 }
 
 extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return businesses.count
+        return searchResultsEmpty ? 1 : businesses.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessTableViewCell") as! BusinessTableViewCell
+        if searchResultsEmpty {
+            return tableView.dequeueReusableCell(withIdentifier: "NoResultsCell")!
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessTableViewCell") as! BusinessTableViewCell
 
-        cell.businessInfo = nil
+            cell.businessInfo = nil
 
-        let business = businesses[indexPath.row]
-        cell.businessInfo = business
+            let business = businesses[indexPath.row]
+            cell.businessInfo = business
 
-        return cell
+            return cell
+        }
     }
 }
 

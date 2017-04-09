@@ -13,10 +13,10 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
 
     var filter: Filter!
 
-    private var displayDistanceOptions = false
-    private var displaySortOptions = false
+    fileprivate var displayDistanceOptions = false
+    fileprivate var displaySortOptions = false
 
-    private var selectedCategoryIndices = Array<Int>()
+    fileprivate var selectedCategoryIndices = Array<Int>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,13 +45,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         })
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        UserDefaults.standard.synchronize()
-    }
-
-    // MARK: FilterSwitchDelegate
+    // MARK: - FilterSwitchDelegate
 
     func switchValueDidChange(sender: SwitchTableViewCell) {
 
@@ -79,13 +73,17 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         } else { // Offering a Deal Switch value changed
             filter.dealsOnly = sender.switchControl.isOn
         }
-
-        // Save latest filter to UserDefaults
-        // TDO: Need to dispose when choosing Cancel
-        saveFilter()
     }
 
-    // MARK: - UITableViewDataSource
+    // MARK: - Action Methods
+
+    @IBAction func dismissFilterView(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+}
+// MARK: - Table View Datasource and Delegate
+
+extension FilterViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 4
@@ -199,8 +197,6 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         return tableView.dequeueReusableCell(withIdentifier: "OtherOptionCell")!
     }
 
-    // MARK: - UITableViewDelegate
-
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 1:
@@ -234,9 +230,6 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
             }
 
             tableView.reloadData()
-            // Save latest filter to UserDefaults
-            // TDO: Need to dispose when choosing Cancel
-            saveFilter()
 
         case 2:
             if displaySortOptions { // Get the selected sort option
@@ -249,25 +242,16 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
                 }) {
                     filter.setSortType(matchingElement.key)
                 }
-
+                
             } else { // display other sort options
                 displaySortOptions = true
             }
-
+            
             tableView.reloadData()
-            // Save latest filter to UserDefaults
-            // TDO: Need to dispose when choosing Cancel
-            saveFilter()
-
+            
         default:
             tableView.deselectRow(at: indexPath, animated: true)
         }
-
-    }
-
-    // MARK: - Utils
-
-    func saveFilter() {
-        UserDefaults.standard.set(filter.dictionaryRepresentation(), forKey: "savedFilter")
+        
     }
 }
