@@ -24,7 +24,7 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         if let savedFilter = UserDefaults.standard.dictionary(forKey: "savedFilter") {
             filter = Filter(dictionary: savedFilter)
         } else {
-            filter = Filter(dealsOnly: false, radius: 0, sort: .bestMatched, selectedCategories: nil)
+            filter = Filter(dealsOnly: false, radius: 0, sort: .bestMatched, categories: nil)
         }
 
         // Force set to generate options for radii and sort modes
@@ -33,14 +33,12 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
 
         let allCategories = Filter.categories
 
-        filter.selectedCategories?.forEach({ (selectedElement) in
+        filter.categories?.forEach({ (selectedElement) in
 
-            let index = allCategories.index(where: { (category) -> Bool in
-                return selectedElement == category["name"]
-            })
-
-            if index != nil {
-                selectedCategoryIndices.append(index!)
+            if let index = allCategories.index(where: { (category) -> Bool in
+                return selectedElement == category["code"]
+            }) {
+                selectedCategoryIndices.append(index)
             }
         })
     }
@@ -56,18 +54,15 @@ class FilterViewController: UITableViewController, FilterSwitchDelegate {
         }) {
 
             if sender.switchControl.isOn {
-                filter.addCategory(name)
+                filter.addCategory(at: index)
                 selectedCategoryIndices.append(index)
 
             } else {
 
-                filter.removeCategory(name)
-
-                if let indexToRemove = selectedCategoryIndices.index(where: { (element) -> Bool in
-                    return element == index
-                }) {
-                    selectedCategoryIndices.remove(at: indexToRemove)
-                }
+                filter.removeCategory(at: index)
+                selectedCategoryIndices = selectedCategoryIndices.filter({ (element) -> Bool in
+                    return element != index
+                })
             }
 
         } else { // Offering a Deal Switch value changed

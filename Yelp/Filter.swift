@@ -11,11 +11,7 @@ import Foundation
 struct Filter {
 
     var dealsOnly: Bool
-    var selectedCategories: Array<String>?
-
-    var formattedCategories: String? {
-        return selectedCategories?.joined(separator: ", ")
-    }
+    var categories: Array<String>?
 
     var sort: YelpSortMode {
         didSet {
@@ -57,16 +53,16 @@ struct Filter {
         return Filter.radii[radius]!
     }
 
-    init(dealsOnly: Bool, radius: Float, sort: YelpSortMode, selectedCategories: Array<String>?) {
+    init(dealsOnly: Bool, radius: Float, sort: YelpSortMode, categories: Array<String>?) {
 
         self.dealsOnly = dealsOnly
         self.radius = radius
         self.sort = sort
 
-        if let newList = selectedCategories {
-            self.selectedCategories = newList
+        if let newList = categories {
+            self.categories = newList
         } else {
-            self.selectedCategories = Array<String>()
+            self.categories = Array<String>()
         }
     }
 
@@ -91,9 +87,9 @@ struct Filter {
         }
 
         if let newValue = dictionary["categories"] as? [String] {
-            selectedCategories = newValue
+            categories = newValue
         } else {
-            selectedCategories = Array<String>()
+            categories = Array<String>()
         }
     }
 
@@ -110,40 +106,24 @@ struct Filter {
     }
 
     mutating func setCategories(_ newValue: [String]?) {
-        selectedCategories = newValue
-    }
-
-    mutating func addCategory(_ newElement: String) {
-        selectedCategories?.append(newElement)
+        categories = newValue
     }
 
     mutating func addCategory(at index: Int) {
         if index < Filter.categories.count {
-            selectedCategories?.append(Filter.categories[index]["name"]!)
-        }
-    }
-
-    mutating func removeCategory(_ elementToRemove: String) {
-        let index = selectedCategories?.index(where: { (element) -> Bool in
-            return element == elementToRemove
-        })
-
-        if let indexToRemove = index {
-            selectedCategories?.remove(at: indexToRemove)
+            categories?.append(Filter.categories[index]["code"]!)
         }
     }
 
     mutating func removeCategory(at index: Int) {
 
         if index < Filter.categories.count {
-            let categoryNameToRemove = Filter.categories[index]["name"]!
+            let categoryToRemove = Filter.categories[index]["code"]!
 
-            let index = selectedCategories?.index(where: { (element) -> Bool in
-                return element == categoryNameToRemove
-            })
-
-            if let indexToRemove = index {
-                selectedCategories?.remove(at: indexToRemove)
+            if let indexToRemove = categories?.index(where: { (element) -> Bool in
+                return element == categoryToRemove
+            }) {
+                categories?.remove(at: indexToRemove)
             }
         }
     }
@@ -158,7 +138,7 @@ struct Filter {
 
         dict.updateValue(sort.rawValue, forKey: "sort")
 
-        if let categoryList = selectedCategories {
+        if let categoryList = categories {
             dict.updateValue(categoryList, forKey: "categories")
         }
 

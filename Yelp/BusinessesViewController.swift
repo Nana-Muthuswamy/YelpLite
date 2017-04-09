@@ -121,7 +121,7 @@ class BusinessesViewController: UIViewController {
 
     // MARK: Navigation
 
-    @IBAction func unwindFilterViewController(unwindSegue: UIStoryboardSegue) {
+    @IBAction func applyFilterToSearchResults(unwindSegue: UIStoryboardSegue) {
 
         if let source = unwindSegue.source as? FilterViewController, let filter = source.filter {
 
@@ -130,7 +130,7 @@ class BusinessesViewController: UIViewController {
             UserDefaults.standard.synchronize()
 
             // Apply Filter to search results
-            performSearch(text: searchController.searchBar.text ?? "", dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.selectedCategories)
+            performSearch(text: searchText, dealsOnly: filter.dealsOnly, radius: filter.radius, sort: filter.sort, categories: filter.categories)
         }
     }
 }

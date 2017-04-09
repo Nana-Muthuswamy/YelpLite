@@ -303,7 +303,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Search" id="cRh-pT-lzZ">
                             <connections>
-                                <segue destination="5D4-Sz-XRz" kind="unwind" unwindAction="unwindFilterViewControllerWithUnwindSegue:" id="bSz-zE-QL2"/>
+                                <segue destination="5D4-Sz-XRz" kind="unwind" unwindAction="applyFilterToSearchResultsWithUnwindSegue:" id="K1x-zZ-COH"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
