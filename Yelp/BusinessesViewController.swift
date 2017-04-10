@@ -41,7 +41,7 @@ class BusinessesViewController: UIViewController, FilterViewDelegate {
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
 
-        searchController.searchBar.placeholder = "Restaurants"
+        searchController.searchBar.placeholder = "Search"
         searchController.searchBar.sizeToFit()
 
         self.navigationItem.titleView = searchController.searchBar

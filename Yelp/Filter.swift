@@ -23,7 +23,7 @@ struct Filter {
                 }
             }
 
-            otherSortOptions = options
+            otherSortOptions = options.sorted()
         }
     }
 
@@ -43,7 +43,7 @@ struct Filter {
                 }
             }
 
-            otherRadiiOtions = options
+            otherRadiiOtions = options.sorted()
         }
     }
 
